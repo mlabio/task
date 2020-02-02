@@ -32,7 +32,7 @@ namespace CRUD.Project
             services.AddControllers();
 
             services.AddDbContext<DatabaseContext>(options => 
-            options.UseSqlServer(Configuration.GetConnectionString("Connection")));
+            options.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
 
             services.RegisterDInjection();
 
