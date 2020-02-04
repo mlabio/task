@@ -12,4 +12,9 @@ namespace CRUD.Project.DAL.Models
         public string Description { get; set; }
         public string Image { get; set; }
     }
+
+    public class ProductResponse : Product
+    {
+        public string CategoryName { get; set; }
+    }
 }

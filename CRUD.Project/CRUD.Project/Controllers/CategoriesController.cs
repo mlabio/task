@@ -8,113 +8,65 @@ using Microsoft.EntityFrameworkCore;
 using CRUD.Project.DAL.Entities;
 using CRUD.Project.DAL.Models;
 using CRUD.Project.BLL.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CRUD.Project.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryService;
-        private readonly DatabaseContext _context;
-        public CategoriesController(ICategoryRepository categoryService, DatabaseContext context)
+        public CategoriesController(ICategoryRepository categoryService)
         {
             _categoryService = categoryService;
-            _context = context;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult> GetCategory()
-        //{
-        //    var data = await _categoryService.GetCategories();
-
-        //    return Ok(data);
-        //}
-
-        // GET: api/Categories
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategory()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetCategory()
         {
-            return await _context.Category.ToListAsync();
+            var data = await _categoryService.GetCategories();
+
+            return Ok(data);
         }
 
-        // GET: api/Categories/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(int id)
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetCategoryById(int id)
         {
-            var category = await _context.Category.FindAsync(id);
+            var data = await _categoryService.GetCategory(id);
 
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return category;
+            return Ok(data);
         }
 
-        // PUT: api/Categories/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(int id, Category category)
+        [HttpPost("Create")]
+        public async Task<IActionResult> CreateCategory([FromBody] Category model) 
         {
-            if (id != category.Id)
+            var data = await _categoryService.CreateCategory(model);
+
+            return Ok(data);
+        }
+
+        [HttpPost("Update/{id}")]
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] Category model)
+        {
+            if(id != model.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(category).State = EntityState.Modified;
+            var data = await _categoryService.UpdateCategory(id, model);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok(data);
         }
 
-        // POST: api/Categories
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
+        [HttpDelete("Delete/{id}")]
+        public async Task<IActionResult> DeleteCategory(int id)
         {
-            _context.Category.Add(category);
-            await _context.SaveChangesAsync();
+            var data = await _categoryService.DeleteCategory(id);
 
-            return CreatedAtAction("GetCategory", new { id = category.Id }, category);
-        }
-
-        // DELETE: api/Categories/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Category>> DeleteCategory(int id)
-        {
-            var category = await _context.Category.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            _context.Category.Remove(category);
-            await _context.SaveChangesAsync();
-
-            return category;
-        }
-
-        private bool CategoryExists(int id)
-        {
-            return _context.Category.Any(e => e.Id == id);
+            return Ok(data);
         }
     }
 }

@@ -16,6 +16,7 @@ namespace CRUD.Project.Configs
         {
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<IAuthRepository, AuthRepository>();
             services.AddTransient<DatabaseContext>();
 
             return services;
